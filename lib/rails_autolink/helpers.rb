@@ -113,7 +113,7 @@ module RailsAutolink
                   link_text = sanitize(link_text)
                   href      = sanitize(href)
                 end
-                content_tag(:a, link_text, link_attributes.merge('href' => href), !!options[:sanitize]) + punctuation.reverse.join('')
+                content_tag(:a, link_text, link_attributes.merge('href' => URI::encode(href.to_str)), !!options[:sanitize]) + punctuation.reverse.join('')
               end
             end
           end
