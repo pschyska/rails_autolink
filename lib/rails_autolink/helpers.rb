@@ -17,6 +17,8 @@ module RailsAutolink
         # text given is sanitized, you can override this behaviour setting the
         # <tt>:sanitize</tt> option to false, or you can add options to the sanitization of
         # the text using the <tt>:sanitize_options</tt> option hash.
+        # Set the <tt>:escape</tt> option to true to URL-encode the href and escapeHTML the link text.
+        # the text using the <tt>:sanitize_options</tt> option hash.
         #
         # ==== Examples
         #   auto_link("Go to http://www.rubyonrails.org and say hello to david@loudthinking.com")
@@ -109,11 +111,15 @@ module RailsAutolink
                 link_text = block_given?? yield(href) : href
                 href = 'http://' + href unless scheme
 
+                if options[:escape]
+                  link_text = CGI.escapeHTML(link_text)
+                  href      = URI::encode(href.to_str)
+                end
                 unless options[:sanitize] == false
                   link_text = sanitize(link_text)
                   href      = sanitize(href)
                 end
-                content_tag(:a, link_text, link_attributes.merge('href' => URI::encode(href.to_str)), !!options[:sanitize]) + punctuation.reverse.join('')
+                content_tag(:a, link_text, link_attributes.merge('href' => href), !!options[:sanitize]) + punctuation.reverse.join('')
               end
             end
           end
